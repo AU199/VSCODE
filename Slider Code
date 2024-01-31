@@ -14,9 +14,9 @@ screen = pygame.display.set_mode((WIDTH,HEIGHT))
 
 WHITE,RED,BLACK = (233,233,233),(233,0,0),(0,0,0)
 
-angle = 0
-ANGLE_MAX = 1.50
-ANGLE_MIN = -1.50
+angle = 0.1
+ANGLE_MAX = 1.56
+ANGLE_MIN = -1.56
 DISTANCE_MIN = 3
 DISTANCE_MAX = 200
 distance = 60
