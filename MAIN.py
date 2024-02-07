@@ -56,7 +56,7 @@ class ball:
         elif self.bounces_num == 0:
             self.bounces_num = 1
             self.v_speed = ((self.v_speed))*-1*self.cof_of_restitution
-            self.h_speed = self.h_speed *self.cof_of_restitution
+            self.h_speed = self.h_speed * 0.5
             # if self.h_speed != 0 or self.v_speed <-1.8092307692307694e-05:
             #     print(f"the current vertical speed is {self.v_speed}, and horizontal speed {self.h_speed} of ball number {self.ball_num}")
             self.nums_bounces += 1
@@ -73,15 +73,24 @@ class ball:
                 print()
                 self.slope = ((self.y-list_thing[1])/(self.x - list_thing[0]))*-1
         print("slope", self.slope, "of ball", self.ball_num)
+        for i in range(-5,5,1):
+            if i < 0:
+                new_x_y = (self.x+i,self.y-(self.slope*i))
+            if i > 0:
+                new_x_y = (self.x+i,self.y+(self.slope*i)*-1)
+            if i ==0:
+                new_x_y = (self.x,self.y)
+            print(new_x_y)
+            pygame.draw.circle(screen,(255,0,0),new_x_y,4)
 
     def draw(self):
         pygame.draw.circle(screen,self.color,(self.x,self.y),5)
-        for i in range(len(self.path)):
-            pygame.draw.circle(screen,(30,240,200),self.path[i],3)
+        # for i in range(len(self.path)):
+        #     pygame.draw.circle(screen,(30,240,200),self.path[i],3)
 
 
 ball_1 = ball(y = 100, x =20, v_speed= 0 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 1 , gravitiy_constant= 9.8, color = (200,200,0),stop=700)
-ball_2 = ball(y = 100, x =40, v_speed= 0.6 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 2 , gravitiy_constant= 9.8, color = (0,255,0),stop=700)
+#ball_2 = ball(y = 100, x =40, v_speed= 0.6 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 2 , gravitiy_constant= 9.8, color = (0,255,0),stop=700)
 while True:
     screen.fill((0,0,0))
     for event in pygame.event.get():
@@ -96,8 +105,8 @@ while True:
     ball_1.cal_slope()
     ball_1.gravity()
     ball_1.draw()
-    ball_2.gravity()
-    ball_2.draw()
+    #ball_2.gravity()
+    #ball_2.draw()
     for i in range(len(rectangle_thing)):
         pygame.draw.rect(screen,(233,0,0),rectangle_thing[i])
     pygame.display.flip()
