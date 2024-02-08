@@ -20,7 +20,7 @@ class ball:
         self.starting_height = y
         self.bounces_num = 0
         self.nums_bounces = 1
-        self.cof_of_restitution = cof_of_restitution
+        self.cof_of_restitution = cof_of_restitution # this is the coefficent of restetution
         self.predicted_height = 0
         self.ball_num = ball_num
         self.predicted_height = (self.cof_of_restitution**2)*self.starting_height
@@ -31,7 +31,7 @@ class ball:
 
     def gravity(self):
         if self.y < self.stop or self.bounces_num != 0:
-
+                # this simulates the gravity constant that is given in self.gravity
                 if self.bounces_num == 0:
                     self.v_speed += ((self.gravitiy_constant*2)/(int(((self.y))*-1)**2))*2
                   
@@ -55,7 +55,9 @@ class ball:
 
         elif self.bounces_num == 0:
             self.bounces_num = 1
+            #sets speed to negative of itself, and multiplies it based on the coefficient of restitution 
             self.v_speed = ((self.v_speed))*-1*self.cof_of_restitution
+            #changes the horizontal speed to half of itself
             self.h_speed = self.h_speed * 0.5
             # if self.h_speed != 0 or self.v_speed <-1.8092307692307694e-05:
             #     print(f"the current vertical speed is {self.v_speed}, and horizontal speed {self.h_speed} of ball number {self.ball_num}")
@@ -84,6 +86,7 @@ class ball:
             pygame.draw.circle(screen,(255,0,0),new_x_y,4)
 
     def draw(self):
+
         pygame.draw.circle(screen,self.color,(self.x,self.y),5)
         # for i in range(len(self.path)):
         #     pygame.draw.circle(screen,(30,240,200),self.path[i],3)
@@ -91,6 +94,8 @@ class ball:
 
 ball_1 = ball(y = 100, x =20, v_speed= 0 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 1 , gravitiy_constant= 9.8, color = (200,200,0),stop=700)
 #ball_2 = ball(y = 100, x =40, v_speed= 0.6 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 2 , gravitiy_constant= 9.8, color = (0,255,0),stop=700)
+
+#Main Loop
 while True:
     screen.fill((0,0,0))
     for event in pygame.event.get():

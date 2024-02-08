@@ -3,6 +3,7 @@ import math
 
 pygame.init()
 
+# dependencies for the slider code to work
 WIDTH,HEIGHT = 900,500
 SLIDER_X, SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT = 10, 10, WIDTH - 300, 20
 D_SLIDER_X, D_SLIDER_Y, D_SLIDER_WIDTH, D_SLIDER_HEIGHT = 10, 40, WIDTH - 300, 20
@@ -11,6 +12,7 @@ point_one = (300,300)
 point_two = (600,300)
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
+
 
 WHITE,RED,BLACK = (233,233,233),(233,0,0),(0,0,0)
 
