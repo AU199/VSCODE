@@ -50,9 +50,10 @@ class ball:
         self.gravitiy_constant = gravitiy_constant
         self.path = []
         self.slope = 0
+        self.hitting = 0
 
     def gravity(self):
-        if self.y < self.stop or self.bounces_num != 0:
+        if self.y < self.stop or self.bounces_num != 0 or self.hitting == 0:
                 # this simulates the gravity constant that is given in self.gravity
                 if self.bounces_num == 0:
                     self.v_speed += ((self.gravitiy_constant*2)/(int(((self.y))*-1)**2))*2
@@ -106,6 +107,11 @@ class ball:
         pygame.draw.circle(screen,self.color,(self.x,self.y),5)
         # for i in range(len(self.path)):
         #     pygame.draw.circle(screen,(30,240,200),self.path[i],3)
+
+    def check_if(self):
+        if (self.x,self.y) in point_list:
+            self.hitting = 1
+
 
 def find_angle(slope):
     print("slope",slope)
@@ -228,6 +234,7 @@ while True:
     ball_1.cal_slope()
     ball_1.gravity()
     ball_1.draw()
+    ball_1.hitting()
     #ball_2.gravity()
     #ball_2.draw()
     if len(all_points)>0:
