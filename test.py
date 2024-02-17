@@ -85,7 +85,7 @@ def car_calc(first_point, second_point):
 def draw_all_points(points):
     for i in range(len(points)):
         pygame.draw.circle(screen, (233,0,0), points[i],5)
-def create_points():
+def create_points(point_one,point_two):
     a = car_calc(point_one,point_two)
     return list(a[0]), a[1]
 
@@ -130,25 +130,22 @@ while True:
         
         if event.type == pygame.MOUSEMOTION and slider_pressed:
             mouseX, mouseY = pygame.mouse.get_pos()
-            print("this is going to the angle")
+
             mouseX = max(SLIDER_X, min(SLIDER_X + SLIDER_WIDTH, mouseX))
             angle = max(ANGLE_MIN, min(ANGLE_MAX, (mouseX - SLIDER_X) / SLIDER_WIDTH * (ANGLE_MAX - ANGLE_MIN) + ANGLE_MIN))
         if event.type == pygame.MOUSEMOTION and distance_slider_pressed:
             mouseX, mouseY = pygame.mouse.get_pos()
-            print("this is going to the distance with distance being ", distance)
             mouseX =max(D_SLIDER_X, min(D_SLIDER_X + D_SLIDER_WIDTH, mouseX))
             distance = max(DISTANCE_MIN, min(DISTANCE_MAX, (mouseX - D_SLIDER_X) / D_SLIDER_WIDTH * (DISTANCE_MAX - DISTANCE_MIN) + DISTANCE_MIN))
 
-    g = create_points()
+    g = create_points(point_one=point_one,point_two=point_two)
     point_list = g[0]
     slope = g[1]
     find_angle(slope)
     draw_slider_angle()
     draw_slider_distance()
     draw_all_points(point_list)
-    print("creating points")
 
     point_one, point_two = change_angle(point_one,point_two)
-    print(f"point one {point_one}, point two {point_two}")
 
     pygame.display.flip()
