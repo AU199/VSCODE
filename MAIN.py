@@ -1,6 +1,8 @@
 import pygame
 import math
 import numpy as np
+import sys
+import os
 
 pygame.init()
 
@@ -18,6 +20,7 @@ screen = pygame.display.set_mode((WIDTH,HEIGHT))
 
 
 WHITE,RED,BLACK = (233,233,233),(233,0,0),(0,0,0)
+epsilon = sys.float_info.epsilon+1
 
 angle = 0.1
 ANGLE_MAX =1.5707963270658885
@@ -30,7 +33,12 @@ distance_slider_pressed = False
 point_list = None
 slope = None
 rectangle_thing = []
+point_list = []
 all_points = []
+r_angles = []
+last_lenght_points = 0
+p_slope = []
+
 
 class ball:
     def __init__(self, x, y,v_speed, h_speed, cof_of_restitution, ball_num,gravitiy_constant, color, stop):
@@ -53,27 +61,13 @@ class ball:
         self.hitting = 0
 
     def gravity(self):
-        if self.y < self.stop or self.bounces_num != 0 or self.hitting == 0:
+        if self.y < self.stop or self.bounces_num != 0 and self.hitting == 0:
                 # this simulates the gravity constant that is given in self.gravity
-                if self.bounces_num == 0:
-                    self.v_speed += ((self.gravitiy_constant*2)/(int(((self.y))*-1)**2))*2
-                  
-                    self.y += self.v_speed
-                    self.x += self.h_speed
-                else:
-                    self.v_speed += ((self.gravitiy_constant*2)/(int(((self.y))*-1)**2))*2
-                    self.y += self.v_speed
-                    self.x += self.h_speed
-                    if self.v_speed > 0:
-                        self.bounces_num = 0
-                        if self.predicted_height != 0 and self.y < 499:
-                            print(f"the current starting height {self.starting_height} and predicted height of ball number {self.ball_num} is {self.predicted_height} and the deviation from actual is {self.predicted_height-self.starting_height}")
-                        self.starting_height = self.y
-                        self.predicted_height = (self.cof_of_restitution**2)*self.predicted_height
+                self.v_speed += ((self.gravitiy_constant*2)/(int(((self.y))*-1)**2))*2
+                self.y += self.v_speed
+                self.x += self.h_speed
                 self.path.append((self.x,self.y))
-
-
-
+       
 
 
         elif self.bounces_num == 0:
@@ -86,6 +80,15 @@ class ball:
             #     print(f"the current vertical speed is {self.v_speed}, and horizontal speed {self.h_speed} of ball number {self.ball_num}")
             self.nums_bounces += 1
             self.path.append((self.x,self.y))
+        if self.hitting == 1:
+            self.hitting = 0
+            print("horizontal speed", self.h_speed*-1,"vertical speed", self.v_speed*-1)
+            print("new y", self.y + self.v_speed*-1, "new x", self.x + self.h_speed*-1)
+
+            self.h_speed = self.h_speed*-1.5
+            self.v_speed = self.v_speed*-1.5
+
+
 
 
     def cal_slope(self):
@@ -109,12 +112,21 @@ class ball:
         #     pygame.draw.circle(screen,(30,240,200),self.path[i],3)
 
     def check_if(self):
-        if (self.x,self.y) in point_list:
-            self.hitting = 1
+        distance_list = []
+        for item in point_list:
+            x,y = item
+            x2 = self.x
+            y2 = self.y
+            distance = math.sqrt((x2-x)**2+(y2-y)**2)
+            distance_list.append(distance)
 
+        for distance in distance_list:
+            if distance<8:
+                    self.hitting = 1
+
+            
 
 def find_angle(slope):
-    print("slope",slope)
     vertical_vector = 3.4
     intersectionpoint = (2.4,300)
 
@@ -129,7 +141,6 @@ def find_angle(slope):
     dot_product = (np.dot(main_vector,plat_vector))/(lenght_of_m_vector*lenght_of_p_vector)
     result = np.arccos(dot_product)
 
-    print("result", result)
 def draw_slider_angle():
     pygame.draw.rect(screen, WHITE, (SLIDER_X, SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT))
     slider_pos = (angle - ANGLE_MIN) / (ANGLE_MAX - ANGLE_MIN) * SLIDER_WIDTH + SLIDER_X
@@ -153,10 +164,10 @@ def car_calc(first_point, second_point):
     curr_pos = first_point
     x = curr_pos[0]
     y = curr_pos[1]
-    for i in range(1000):
-        x = ((1- ((i+1)/1000))*curr_pos[0]) + second_point[0]*((i+1)/1000)
+    for i in range(10000):
+        x = ((1- ((i+1)/10000))*curr_pos[0]) + second_point[0]*((i+1)/10000)
         if slope != 0:
-             y = ((1- ((i+1)/1000))*sp[1]) + ep[1]*((i+1)/1000)
+             y = ((1- ((i+1)/10000))*sp[1]) + ep[1]*((i+1)/10000)
         else:
             y = 0
 
@@ -185,11 +196,27 @@ def change_angle(point1,point2):
     point_two = (x2,y2)
     return point_one, point_two
 
+def slope_p(point_list):
+    p_list = point_list
+    p_slope = []
+    
+    if len(p_list) > 1:
+        for i in range(0,int(len(p_list)/10000)-1,10000):
+            ep = p_list[i+10000]
+            sp = p_list[i]
+            move = (sp[0]-ep[0])*-1
+            rise = (sp[1]-ep[1])*-1
+            if move != 0:
+                slope = ((ep[1]-sp[1]))/((ep[0]-sp[0]))
+                p_slope.append(slope)
+            
+
 
 
 ball_1 = ball(y = 100, x =20, v_speed= 0 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 1 , gravitiy_constant= 9.8, color = (200,200,0),stop=900)
-#ball_2 = ball(y = 100, x =40, v_speed= 0.6 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 2 , gravitiy_constant= 9.8, color = (0,255,0),stop=700)
-
+# ball_3 = ball(x=0,y=900,v_speed = -4, h_speed= 0.4, cof_of_restitution= 0.4, ball_num= 3, gravitiy_constant= 9.8, color= (0,0,255),stop= 900)
+#ball_2 = ball(y = 100, x =40, v_speed= 0.6 , h_speed= 0.15 , cof_of_restitution= 0.3 , ball_num= 2 , gravitiy_constant= 9.8, color = (0,255,0),stop=1000)
+last_lenght = 0
 #Main Loop
 while True:
     screen.fill((0,0,0))
@@ -216,7 +243,6 @@ while True:
                 y2 = mouseY-(math.cos(angle)*distance)
                 all_points.append(point_one)
                 all_points.append((x2,y2))
-                print(all_points)
         if event.type == pygame.MOUSEBUTTONUP:
             slider_pressed = False
             distance_slider_pressed = False
@@ -234,21 +260,27 @@ while True:
     ball_1.cal_slope()
     ball_1.gravity()
     ball_1.draw()
-    ball_1.hitting()
+    ball_1.check_if()
     #ball_2.gravity()
     #ball_2.draw()
-    if len(all_points)>0:
-        print(len(all_points))
+    # ball_3.gravity()
+    # ball_3.draw()
+    if len(all_points)>last_lenght:
+        last_lenght += 2
+        point_list = []
         for i in range(0,len(all_points)-1,2):
             point_one = all_points[i]
             point_two = all_points[i+1]
             g = create_points()
-            point_list = g[0]
+            point_list.extend(g[0])
             slope = g[1]
             find_angle(slope)
-            draw_all_points(point_list)
+    if last_lenght_points <len(point_list):
+        last_lenght_points = len(point_list)
+        slope_p(point_list = point_list)
     draw_slider_angle()
     draw_slider_distance()
+    draw_all_points(point_list)
     for i in range(len(rectangle_thing)):
         pygame.draw.rect(screen,(233,0,0),rectangle_thing[i])
     pygame.display.flip()

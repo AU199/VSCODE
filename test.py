@@ -2,10 +2,10 @@ import numpy as np
 import pygame 
 import math
 
-def find_angle(slope):
+def find_angle(slope, intersection_point, v_v):
     print("slope",slope)
-    vertical_vector = 3.4
-    intersectionpoint = (2.4,300)
+    vertical_vector = 1.1
+    intersectionpoint = intersection_point
 
     main_vector = [1, vertical_vector]
     plat_vector = [1,slope]
@@ -19,9 +19,8 @@ def find_angle(slope):
     dot_product = (np.dot(main_vector,plat_vector))/(lenght_of_m_vector*lenght_of_p_vector)
     print(dot_product)
     result = np.arccos(dot_product)
-
     print("result", result)
-
+    return result
 
 pygame.init()
 
@@ -50,6 +49,7 @@ point_list = None
 slope = None
 
 def draw_slider_angle():
+
     pygame.draw.rect(screen, WHITE, (SLIDER_X, SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT))
     slider_pos = (angle - ANGLE_MIN) / (ANGLE_MAX - ANGLE_MIN) * SLIDER_WIDTH + SLIDER_X
     pygame.draw.rect(screen, RED, (slider_pos - 5, SLIDER_Y - 5, 10, SLIDER_HEIGHT + 10))
@@ -66,7 +66,7 @@ def car_calc(first_point, second_point):
     g = []
 
     if move != 0:
-        slope = (((ep[1]-sp[1])*-1)/((ep[0]-sp[0])*-1))
+        slope = (((ep[1]-sp[1]))/((ep[0]-sp[0])))
 
 
     curr_pos = first_point
@@ -102,7 +102,7 @@ def change_angle(point1,point2):
     point_two = (x2,y2)
     return point_one, point_two
 
-a = create_points()
+a = create_points(point_one=point_one,point_two=point_two)
 point_list = a
 while True:
     point_list = None
@@ -137,11 +137,12 @@ while True:
             mouseX, mouseY = pygame.mouse.get_pos()
             mouseX =max(D_SLIDER_X, min(D_SLIDER_X + D_SLIDER_WIDTH, mouseX))
             distance = max(DISTANCE_MIN, min(DISTANCE_MAX, (mouseX - D_SLIDER_X) / D_SLIDER_WIDTH * (DISTANCE_MAX - DISTANCE_MIN) + DISTANCE_MIN))
-
+    if angle ==0: angle = 0.01
     g = create_points(point_one=point_one,point_two=point_two)
     point_list = g[0]
     slope = g[1]
-    find_angle(slope)
+
+    find_angle(slope,(2.4,300),3.4)
     draw_slider_angle()
     draw_slider_distance()
     draw_all_points(point_list)
